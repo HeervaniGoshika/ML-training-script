@@ -5,11 +5,11 @@ on:
     branches: ["main"]
 
 jobs:
-  ci-cd:
+  train-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Setup Python
@@ -21,14 +21,12 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-          pip install flake8 pytest
+        
 
       # RUN TESTS
-      - name: Code quality
-        run: flake8 .
 
       - name: Run tests
-        run: pytest -v
+        run: pytest -q
 
       # TRAIN & SAVE MODEL
       - name: Train model
@@ -49,7 +47,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/wine-ml-app:latest .
+        run: |
+            docker build -t ${{ secrets.DOCKER_USERNAME }}/wine-ml-app:latest .
 
       - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/wine-ml-app:latest
+        run: | 
+            docker push ${{ secrets.DOCKER_USERNAME }}/wine-ml-app:latest

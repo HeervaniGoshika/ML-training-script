@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,26 +25,14 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pandas scikit-learn
+          pip install -r requirements.txt
 
-      # OPTIONAL: If you keep data.csv in repo
-      # Verify that file exists
-      - name: Check data file
+      
+      
+      - name: Run flake8
         run: |
-          if [ ! -f "data.csv" ]; then
-            echo "❌ data.csv not found!"
-            exit 1
-          fi
-          echo "✔ data.csv found!"
+          flake8
 
-      # Step 4: Run the training script
-      - name: Run training script
+      - name: Run pytest
         run: |
-          python train_model.py
-
-          # Upload trained model
-      - name: Upload model artifact
-      uses: actions/upload-artifact@v3
-      with:
-            name: trained-model
-            path: model.pkl
+          pytest -q    
