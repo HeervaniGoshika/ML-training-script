@@ -1,0 +1,6 @@
+# Upload trained model
+- name: Upload model artifact
+  uses: actions/upload-artifact@v3
+  with:
+    name: trained-model
+    path: model.pkl

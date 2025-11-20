@@ -1,0 +1,55 @@
+name: CI/CD Pipeline for ML Model
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  ci-cd:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8 pytest
+
+      # RUN TESTS
+      - name: Code quality
+        run: flake8 .
+
+      - name: Run tests
+        run: pytest -v
+
+      # TRAIN & SAVE MODEL
+      - name: Train model
+        run: python train_model.py
+
+      # UPLOAD ARTIFACT
+      - name: Upload model artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: trained-model
+          path: model.pkl
+
+      # BUILD DOCKER IMAGE
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/wine-ml-app:latest .
+
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/wine-ml-app:latest

@@ -1,20 +1,17 @@
-# train_model.py
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
+import pickle
+from fastapi import FastAPI
 
-# Load data
-data = pd.read_csv("data.csv")
+app = FastAPI()
 
-# Split
-X = data[['feature1', 'feature2']]
-y = data['target']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+# load model
+with open("model.pkl", "rb") as f:
+    model = pickle.load(f)
 
-# Train model
-model = LinearRegression()
-model.fit(X_train, y_train)
+@app.get("/")
+def home():
+    return {"message": "Model API is running"}
 
-print("Model trained successfully!")
-print("Accuracy:", model.score(X_test, y_test))
-
+@app.post("/predict")
+def predict(feature1: float, feature2: float):
+    prediction = model.predict([[feature1, feature2]])[0]
+    return {"prediction": prediction}
