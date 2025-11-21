@@ -10,8 +10,9 @@ COPY . .
 # install dependencies
 RUN pip install -r requirements.txt
 
-COPY model.pkl model.pkl
-COPY app.py app.py
+COPY model.pkl ./
+COPY app.py ./
 
+EXPOSE 5500
 # specify the default command to run the app
-CMD ["python", "app.py", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "5500"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "5500"]
