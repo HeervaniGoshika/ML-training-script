@@ -47,8 +47,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/wine-ml-python-app:latest .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/ml-python-app:latest .
 
       - name: Push Docker image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/wine-ml-python-app:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/ml-python-app:latest
